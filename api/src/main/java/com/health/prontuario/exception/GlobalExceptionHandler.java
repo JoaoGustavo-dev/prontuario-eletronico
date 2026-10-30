@@ -33,4 +33,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(new ErroResposta(409, ex.getMessage(), null));
     }
+
+    @ExceptionHandler(PacienteNaoEncontradoException.class)
+    public ResponseEntity<ErroResposta> naoEncontrado(PacienteNaoEncontradoException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErroResposta(404, ex.getMessage(), null));
+    }
 }
