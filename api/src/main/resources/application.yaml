@@ -9,3 +9,12 @@ spring:
     hibernate:
       ddl-auto: update
     open-in-view: false
+
+app:
+  security:
+    profissional:
+      usuario: ${AUTH_PROFISSIONAL_USUARIO}
+      senha: ${AUTH_PROFISSIONAL_SENHA}
+    leitor:
+      usuario: ${AUTH_LEITOR_USUARIO}
+      senha: ${AUTH_LEITOR_SENHA}
