@@ -18,3 +18,5 @@ app:
     leitor:
       usuario: ${AUTH_LEITOR_USUARIO}
       senha: ${AUTH_LEITOR_SENHA}
+  crypto:
+    chave: ${APP_CRYPTO_CHAVE}
