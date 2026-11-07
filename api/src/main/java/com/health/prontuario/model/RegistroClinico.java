@@ -1,5 +1,6 @@
 package com.health.prontuario.model;
 
+import com.health.prontuario.crypto.NotaClinicaConverter;
 import com.health.prontuario.exception.DadosInvalidosException;
 import jakarta.persistence.*;
 
@@ -22,7 +23,8 @@ public abstract class RegistroClinico {
     @Column(name = "registrado_em", nullable = false)
     private Instant registradoEm;
 
-    @Column(name = "nota_clinica", length = 2000)
+    @Convert(converter = NotaClinicaConverter.class)
+    @Column(name = "nota_clinica", columnDefinition = "text")
     private String notaClinica;
 
     protected RegistroClinico() {
