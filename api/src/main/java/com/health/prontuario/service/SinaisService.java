@@ -41,6 +41,15 @@ public class SinaisService {
                 : new SinaisVitais(paciente, request.pressaoSistolica(),
                 request.pressaoDiastolica(), request.frequenciaCardiaca(),
                 request.instante());
+        return salvarEAvaliar(novo);
+    }
+
+    @Transactional
+    public SinaisResponse registrarLeitura(SinaisVitais leitura) {
+        return salvarEAvaliar(leitura);
+    }
+
+    private SinaisResponse salvarEAvaliar(SinaisVitais novo) {
         SinaisVitais salvo = sinaisRepository.save(novo);
 
         List<AlertaResponse> alertas = regras.stream()
