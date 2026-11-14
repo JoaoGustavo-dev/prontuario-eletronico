@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Prontuário Eletrônico</title>
+    <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+<header>
+    <h1>Prontuário Eletrônico</h1>
+    <div id="sessao" hidden>
+        <span id="perfil"></span>
+        <button type="button" id="btn-sair" class="secundario">Sair</button>
+    </div>
+</header>
+
+<main>
+    <section id="tela-login">
+        <h2>Entrar</h2>
+        <form id="form-login" novalidate>
+            <label>Usuário
+                <input id="l-usuario" type="text" autocomplete="off">
+            </label>
+            <label>Senha
+                <input id="l-senha" type="password" autocomplete="off">
+            </label>
+            <button type="submit">Entrar</button>
+            <p id="msg-login" class="msg" role="alert"></p>
+        </form>
+    </section>
+
+    <div id="tela-app" hidden>
+        <section>
+            <h2>Alertas</h2>
+            <button type="button" id="btn-alertas">Atualizar</button>
+            <p id="msg-alertas" class="msg" role="alert"></p>
+            <ul id="lista-alertas" class="lista"></ul>
+        </section>
+
+        <section>
+            <h2>Histórico do paciente</h2>
+            <form id="form-historico" novalidate>
+                <label>ID do paciente
+                    <input id="h-id" type="text" inputmode="numeric">
+                </label>
+                <button type="submit">Buscar</button>
+                <p id="msg-historico" class="msg" role="alert"></p>
+            </form>
+            <div id="resultado-historico"></div>
+        </section>
+
+        <section>
+            <h2>Cadastrar paciente</h2>
+            <form id="form-paciente" novalidate>
+                <fieldset class="escrita">
+                    <label>Nome
+                        <input id="p-nome" type="text">
+                    </label>
+                    <label>Data de nascimento
+                        <input id="p-data" type="date">
+                    </label>
+                    <label>CPF (11 dígitos)
+                        <input id="p-cpf" type="text" inputmode="numeric" maxlength="11">
+                    </label>
+                    <button type="submit">Cadastrar</button>
+                </fieldset>
+                <p id="msg-paciente" class="msg" role="alert"></p>
+            </form>
+        </section>
+
+        <section>
+            <h2>Registrar sinais vitais</h2>
+            <form id="form-sinais" novalidate>
+                <fieldset class="escrita">
+                    <label>ID do paciente
+                        <input id="s-id" type="text" inputmode="numeric">
+                    </label>
+                    <label>Pressão sistólica (mmHg)
+                        <input id="s-sis" type="text" inputmode="numeric">
+                    </label>
+                    <label>Pressão diastólica (mmHg)
+                        <input id="s-dia" type="text" inputmode="numeric">
+                    </label>
+                    <label>Frequência cardíaca (bpm)
+                        <input id="s-fc" type="text" inputmode="numeric">
+                    </label>
+                    <button type="submit">Registrar</button>
+                </fieldset>
+                <p id="msg-sinais" class="msg" role="alert"></p>
+            </form>
+        </section>
+
+        <section>
+            <h2>Registro clínico</h2>
+            <form id="form-registro" novalidate>
+                <fieldset class="escrita">
+                    <label>ID do paciente
+                        <input id="r-id" type="text" inputmode="numeric">
+                    </label>
+                    <label>Tipo
+                        <select id="r-tipo">
+                            <option value="EXAME">Exame</option>
+                            <option value="RECEITA">Receita</option>
+                        </select>
+                    </label>
+                    <div id="campos-exame">
+                        <label>Tipo de exame
+                            <input id="r-tipo-exame" type="text">
+                        </label>
+                        <label>Resultado
+                            <input id="r-resultado" type="text">
+                        </label>
+                    </div>
+                    <div id="campos-receita" hidden>
+                        <label>Medicamento
+                            <input id="r-medicamento" type="text">
+                        </label>
+                        <label>Posologia
+                            <input id="r-posologia" type="text">
+                        </label>
+                    </div>
+                    <label>Nota clínica (cifrada no banco)
+                        <textarea id="r-nota" rows="3"></textarea>
+                    </label>
+                    <button type="submit">Registrar</button>
+                </fieldset>
+                <p id="msg-registro" class="msg" role="alert"></p>
+            </form>
+        </section>
+    </div>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
