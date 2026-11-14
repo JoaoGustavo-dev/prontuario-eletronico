@@ -84,11 +84,16 @@ function entrarNoApp(profissional) {
   $("sessao").hidden = false;
   $("perfil").textContent = profissional ? "Perfil: profissional" : "Perfil: leitor (somente leitura)";
   document.querySelectorAll("fieldset.escrita").forEach((f) => { f.disabled = !profissional; });
-  carregarAlertas();
+  idsConhecidos = null;
+  maiorAtrasoMs = 0;
+  carregarAlertas().then(agendarPolling);
 }
 
 function sair() {
   credenciais = null;
+  pararPolling();
+  idsConhecidos = null;
+  $("status-alertas").textContent = "";
   $("tela-app").hidden = true;
   $("sessao").hidden = true;
   $("tela-login").hidden = false;
@@ -123,11 +128,24 @@ $("form-login").addEventListener("submit", (ev) => {
 
 $("btn-sair").addEventListener("click", sair);
 
-/* ---------- Alertas ---------- */
+/* ---------- Alertas (polling) ---------- */
+
+const INTERVALO_MS = 2000;
+const LIMITE_MS = 5000;
+
+let idsConhecidos = null;
+let temporizador = null;
+let maiorAtrasoMs = 0;
 
 async function carregarAlertas() {
-  await executar("msg-alertas", async () => {
+  if (credenciais === null) return;
+  try {
     const r = await chamar("/alertas");
+    if (credenciais === null) return;
+    if (r.status === 401) {
+      sair();
+      return;
+    }
     if (!r.ok) {
       mostrar("msg-alertas", textoDoErro(r), false);
       return;
@@ -136,25 +154,89 @@ async function carregarAlertas() {
       mostrar("msg-alertas", "Formato inesperado em GET /alertas (esperava uma lista).", false);
       return;
     }
+
+    const detectadoEm = Date.now();
+    const novos = idsConhecidos === null ? [] : r.dados.filter((a) => !idsConhecidos.has(a.id));
+    const idsNovos = new Set(novos.map((a) => a.id));
+    idsConhecidos = new Set(r.dados.map((a) => a.id));
+
     const lista = $("lista-alertas");
     lista.replaceChildren();
-    if (r.dados.length === 0) {
-      mostrar("msg-alertas", "Nenhum alerta registrado.", true);
-      return;
-    }
-    r.dados.forEach((a) => lista.appendChild(itemAlerta(a)));
-  });
+    r.dados.forEach((a) => lista.appendChild(itemAlerta(a, idsNovos.has(a.id))));
+
+    limpar("msg-alertas");
+    if (r.dados.length === 0) mostrar("msg-alertas", "Nenhum alerta registrado.", true);
+    $("status-alertas").textContent = "Última atualização: "
+      + new Date().toLocaleTimeString("pt-BR") + " | " + r.dados.length + " alertas";
+    if (novos.length > 0) registrarLatencia(novos, detectadoEm);
+  } catch (e) {
+    mostrar("msg-alertas", "Sem conexão com a API (" + e.message + "). Tentando de novo...", false);
+  }
 }
 
-function itemAlerta(a) {
-  const li = criar("li", undefined, "alerta");
+function registrarLatencia(novos, detectadoEm) {
+  const atrasoMs = Math.max(0, ...novos.map((a) => detectadoEm - Date.parse(a.geradoEm)));
+  maiorAtrasoMs = Math.max(maiorAtrasoMs, atrasoMs);
+  const dentro = atrasoMs <= LIMITE_MS;
+  const segundos = (ms) => (ms / 1000).toFixed(1).replace(".", ",") + " s";
+  mostrar("msg-latencia",
+    novos.length + " novo(s) alerta(s). Atraso até aparecer: " + segundos(atrasoMs)
+    + (dentro ? " (dentro do limite de 5 s)" : " (FORA do limite de 5 s)")
+    + ". Maior atraso na sessão: " + segundos(maiorAtrasoMs) + ".",
+    dentro);
+}
+
+function itemAlerta(a, nova) {
+  const li = criar("li", undefined, nova ? "alerta nova" : "alerta");
   li.appendChild(criar("strong", a.regra));
   li.appendChild(criar("span", a.justificativa));
   li.appendChild(criar("small", formatarData(a.geradoEm)));
   return li;
 }
 
+function agendarPolling() {
+  pararPolling();
+  if (credenciais === null || !$("auto-alertas").checked) return;
+  temporizador = setTimeout(async () => {
+    await carregarAlertas();
+    agendarPolling();
+  }, INTERVALO_MS);
+}
+
+function pararPolling() {
+  if (temporizador !== null) {
+    clearTimeout(temporizador);
+    temporizador = null;
+  }
+}
+
 $("btn-alertas").addEventListener("click", carregarAlertas);
+$("auto-alertas").addEventListener("change", agendarPolling);
+
+/* ---------- Atalhos de teclado ---------- */
+
+const ATALHOS = {
+  KeyA: () => carregarAlertas(),
+  KeyP: () => {
+    const caixa = $("auto-alertas");
+    caixa.checked = !caixa.checked;
+    agendarPolling();
+  },
+  KeyH: () => $("h-id").focus(),
+  KeyN: () => $("p-nome").focus(),
+  KeyS: () => $("s-id").focus(),
+  KeyR: () => $("r-id").focus()
+};
+
+document.addEventListener("keydown", (ev) => {
+  if ($("tela-app").hidden) return;
+  if (!ev.altKey || ev.ctrlKey || ev.metaKey) return;
+  const acao = ATALHOS[ev.code];
+  if (acao) {
+    ev.preventDefault();
+    acao();
+  }
+});
 
 /* ---------- Histórico ---------- */
 

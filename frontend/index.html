@@ -14,7 +14,7 @@
         <button type="button" id="btn-sair" class="secundario">Sair</button>
     </div>
 </header>
-
+<p class="atalhos">Atalhos (Option no Mac, Alt no Windows): A atualizar alertas | P pausar ou retomar | H histórico | N novo paciente | S sinais | R registro clínico</p>
 <main>
     <section id="tela-login">
         <h2>Entrar</h2>
@@ -34,6 +34,12 @@
         <section>
             <h2>Alertas</h2>
             <button type="button" id="btn-alertas">Atualizar</button>
+            <label class="inline">
+                <input type="checkbox" id="auto-alertas" checked>
+                Atualização automática (a cada 2 s)
+            </label>
+            <p id="status-alertas" class="info"></p>
+            <p id="msg-latencia" class="msg" role="status"></p>
             <p id="msg-alertas" class="msg" role="alert"></p>
             <ul id="lista-alertas" class="lista"></ul>
         </section>

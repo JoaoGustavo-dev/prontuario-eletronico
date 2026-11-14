@@ -90,3 +90,24 @@ button:disabled { cursor: not-allowed; }
 h3 { margin: 1rem 0 0.25rem; font-size: 1rem; }
 
 [hidden] { display: none !important; }
+
+label.inline {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.75rem 0 0;
+}
+
+label.inline input { width: auto; margin: 0; }
+
+.info { margin: 0.5rem 0 0; font-size: 0.85rem; color: #4b5563; }
+
+.atalhos {
+  max-width: 48rem;
+  margin: 0.5rem auto 0;
+  padding: 0 1rem;
+  font-size: 0.8rem;
+  color: #4b5563;
+}
+
+.lista li.nova { background: #fee2e2; }
