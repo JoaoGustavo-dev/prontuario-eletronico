@@ -1,6 +1,8 @@
 package com.health.prontuario.exception;
 
 import com.health.prontuario.dto.ErroResposta;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -12,6 +14,8 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger LOG = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErroResposta> validacao(MethodArgumentNotValidException ex) {
@@ -38,5 +42,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErroResposta> naoEncontrado(PacienteNaoEncontradoException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ErroResposta(404, ex.getMessage(), null));
+    }
+
+    @ExceptionHandler(CriptografiaException.class)
+    public ResponseEntity<ErroResposta> criptografia(CriptografiaException ex) {
+        LOG.error("Falha de criptografia: {}", ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErroResposta(500, "Falha ao processar dados protegidos.", null));
     }
 }
