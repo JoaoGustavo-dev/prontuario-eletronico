@@ -16,6 +16,8 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.HashSet;
+import java.util.Set;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,8 +39,9 @@ public class ImportacaoService {
     }
 
     public ImportacaoResponse importarPacientes(String csv) {
+        Set<String> cpfsVistos = new HashSet<>();
         return processar(csv, ExportacaoService.CABECALHO_PACIENTES,
-                COLUNAS_PACIENTES, this::importarLinhaPaciente);
+                COLUNAS_PACIENTES, campos -> importarLinhaPaciente(campos, cpfsVistos));
     }
 
     public ImportacaoResponse importarSinais(String csv) {
@@ -94,8 +97,11 @@ public class ImportacaoService {
         return new ImportacaoResponse(lidas, importadas, erros);
     }
 
-    private void importarLinhaPaciente(List<String> c) {
+    private void importarLinhaPaciente(List<String> c, Set<String> cpfsVistos) {
         String cpf = c.get(0).trim();
+        if (cpfsVistos.contains(cpf)) {
+            throw new DadosInvalidosException("CPF repetido neste arquivo.");
+        }
         String nome = c.get(1);
         LocalDate nascimento;
         try {
@@ -109,6 +115,7 @@ public class ImportacaoService {
             throw new DadosInvalidosException("CPF já cadastrado.");
         }
         pacienteRepository.save(paciente);
+        cpfsVistos.add(cpf);
     }
 
     private void importarLinhaSinais(List<String> c) {
