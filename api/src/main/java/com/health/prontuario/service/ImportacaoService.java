@@ -17,6 +17,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+
 @Service
 public class ImportacaoService {
 
@@ -39,6 +44,14 @@ public class ImportacaoService {
     public ImportacaoResponse importarSinais(String csv) {
         return processar(csv, ExportacaoService.CABECALHO_SINAIS,
                 COLUNAS_SINAIS, this::importarLinhaSinais);
+    }
+
+    public ImportacaoResponse importarPacientes(File arquivo) {
+        return importarPacientes(lerArquivo(arquivo));
+    }
+
+    public ImportacaoResponse importarSinais(File arquivo) {
+        return importarSinais(lerArquivo(arquivo));
     }
 
     private ImportacaoResponse processar(String csv, String cabecalhoEsperado,
@@ -122,6 +135,23 @@ public class ImportacaoService {
             return Integer.parseInt(texto.trim());
         } catch (NumberFormatException e) {
             throw new DadosInvalidosException("Valor inválido na coluna " + coluna + ".");
+        }
+    }
+
+    private static String lerArquivo(File arquivo) {
+        if (arquivo == null || !arquivo.isFile()) {
+            throw new DadosInvalidosException(
+                    "Arquivo não encontrado ou não é um arquivo regular. Confira o caminho e tente novamente.");
+        }
+        if (!arquivo.canRead()) {
+            throw new DadosInvalidosException(
+                    "Sem permissão para ler o arquivo " + arquivo.getName() + ".");
+        }
+        try {
+            return Files.readString(arquivo.toPath(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new DadosInvalidosException(
+                    "Não foi possível ler " + arquivo.getName() + " como texto UTF-8.");
         }
     }
 }
