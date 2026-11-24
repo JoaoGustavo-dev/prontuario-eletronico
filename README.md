@@ -183,6 +183,4 @@ Microserviços (separar pacientes e prontuário, sinais vitais e alertas), WebSo
 
 ## Autoria
 
-## Autoria
-
-Grupo: Arthur Vieira, Álvaro Fraga, José Gabriel Fontes, João Gustavo e Pedro Simões. Ciência da Computação (UNIT), 4º período. Disciplina Projeto de Programação, profs. Walisson Souza e Jonnathan Souza. O histórico de commits do repositório registra a contribuição individual de cada integrante.
+Grupo: Arthur Vieira, Álvaro Fraga, José Gabriel Fontes, João Gustavo e Pedro Simões. Ciência da Computação (UNIT), 4º período. Disciplina Projeto de Programação, profs. Walisson Souza e Jonnathan Souza.
